@@ -1,0 +1,229 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        types:
+            [
+                opened,
+                synchronize,
+                reopened,
+                edited,
+                ready_for_review,
+                labeled,
+                unlabeled,
+            ]
+    workflow_dispatch:
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+env:
+    NODE_VERSION: '22.22.2'
+
+jobs:
+    changes:
+        name: Classify changes
+        runs-on: ubuntu-24.04
+        outputs:
+            classification: ${{ steps.classify.outputs.classification }}
+        steps:
+            - name: Check out repository and comparison history
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  fetch-depth: 0
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+            - name: Classify complete PR diff
+              id: classify
+              run: node scripts/classify-changes.mjs
+
+    docs:
+        name: Documentation
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install locked JavaScript dependencies
+              run: npm ci
+            - name: Validate Markdown, links, anchors and traceability
+              run: npm run check:docs
+            - name: Test CI classification, gate and delivery contracts
+              run: npm run test:ci
+
+    metadata:
+        name: Metadata delivery checks
+        needs: changes
+        if: needs.changes.outputs.classification == 'metadata'
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install locked JavaScript dependencies
+              run: npm ci
+            - name: Verify versions and metadata
+              run: npm run check:versions
+            - name: Load plugin configuration
+              run: node scripts/lib/print-github-env.mjs
+            - name: Build production package
+              run: npm run plugin:zip
+            - name: Verify package contents and checksum
+              run: npm run check:package
+
+    build-and-version:
+        name: Build and version
+        needs: changes
+        if: needs.changes.outputs.classification == 'full'
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install JavaScript dependencies
+              run: npm ci
+            - name: Install PHP dependencies
+              run: npm run composer:install
+            - name: Start WordPress test environment
+              run: npm run env:test:start
+            - name: Run formatting, lint, tests, translations and build
+              run: WPPB_WP_ENV_CONFIG=.wp-env.test.json npm run check
+            - name: Verify versions agree
+              run: npm run check:versions
+
+    php:
+        name: PHP ${{ matrix.php }}
+        needs: changes
+        if: needs.changes.outputs.classification == 'full'
+        runs-on: ubuntu-24.04
+        strategy:
+            fail-fast: false
+            matrix:
+                php: ['8.0', '8.3']
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up PHP
+              uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+              with:
+                  php-version: ${{ matrix.php }}
+                  coverage: none
+                  tools: composer:2.9.5
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --prefer-dist --no-progress
+            - name: Run PHP lint and tests
+              run: composer run lint && composer run test
+
+    javascript:
+        name: JavaScript and CSS
+        needs: changes
+        if: needs.changes.outputs.classification == 'full'
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install JavaScript dependencies
+              run: npm ci
+            - name: Run JavaScript, CSS and unit checks
+              run: npm run lint:js && npm run lint:css && npm run test:js
+
+    wordpress:
+        name: WordPress integration, E2E and Plugin Check
+        needs: changes
+        if: needs.changes.outputs.classification == 'full'
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install JavaScript dependencies
+              run: npm ci
+            - name: Run WordPress and browser quality gate
+              run: npm run test:local
+
+    ci-artifact:
+        name: Upload CI plugin artifact
+        runs-on: ubuntu-24.04
+        needs: [changes, docs, build-and-version, php, javascript, wordpress]
+        if: needs.changes.outputs.classification == 'full'
+        permissions:
+            contents: read
+            actions: write
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install JavaScript dependencies
+              run: npm ci
+            - name: Build production package
+              run: npm run plugin:zip
+            - name: Verify package contents and checksum
+              run: npm run check:package
+            - name: Upload plugin artifact
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: wppb-ci-${{ github.run_id }}
+                  path: |
+                      dist/${{ env.PACKAGE_ZIP }}
+                      dist/${{ env.PACKAGE_ZIP }}.sha256
+                  retention-days: 3
+
+    ci-gate:
+        name: CI gate
+        if: always()
+        needs:
+            [
+                changes,
+                docs,
+                metadata,
+                build-and-version,
+                php,
+                javascript,
+                wordpress,
+                ci-artifact,
+            ]
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+            - name: Require all jobs selected by classification
+              env:
+                  CI_NEEDS: ${{ toJSON(needs) }}
+              run: node scripts/ci-gate.mjs

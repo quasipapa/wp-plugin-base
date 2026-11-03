@@ -1,0 +1,42 @@
+{
+	"$schema": "./template-meta/plugin.config.schema.json",
+	"name": "Example Plugin",
+	"slug": "example-plugin",
+	"textDomain": "example-plugin",
+	"namespace": "EXAMPLEPLUGIN",
+	"prefix": "example_plugin",
+	"author": "quasipapa",
+	"repo": "quasipapa/example-plugin",
+	"license": "GPL-2.0-or-later",
+	"mainFile": "example-plugin.php",
+	"readme": "readme.txt",
+	"blockName": "example-plugin/example",
+	"i18nUseMap": {
+		"src/edit.jsx": "build/index.js",
+		"src/index.js": "build/index.js",
+		"src/view.js": "build/view.js"
+	},
+	"packageFiles": [
+		"example-plugin.php",
+		"readme.txt",
+		"LICENSE",
+		"THIRD_PARTY_NOTICES.md"
+	],
+	"packageDirs": [ "build", "includes", "languages" ],
+	"requiredPackageEntries": [
+		"build/block.json",
+		"build/render.php",
+		"build/index.js",
+		"build/index.asset.php",
+		"build/index.css",
+		"build/view.js",
+		"build/view.asset.php",
+		"build/style-index.css"
+	],
+	"docsRootFiles": [
+		"AGENTS.md",
+		"README.md",
+		"SECURITY.md",
+		"THIRD_PARTY_NOTICES.md"
+	]
+}

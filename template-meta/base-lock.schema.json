@@ -1,0 +1,27 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Base lock: records which wp-plugin-base version a derived project uses",
+	"type": "object",
+	"required": [ "baseRepo", "baseVersion", "managedFiles" ],
+	"properties": {
+		"baseRepo": {
+			"type": "string",
+			"const": "quasipapa/wp-plugin-base",
+			"description": "Template repository this project was generated from."
+		},
+		"baseVersion": {
+			"type": "string",
+			"pattern": "^v\\d+\\.\\d+\\.\\d+$",
+			"description": "Base release tag, e.g. v1.0.0."
+		},
+		"managedFiles": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "string",
+				"pattern": "^[0-9a-f]{64}$",
+				"description": "SHA-256 of the managed file at baseVersion."
+			},
+			"description": "Managed (base-owned) files and their hashes. Local modifications are detected by audit."
+		}
+	}
+}

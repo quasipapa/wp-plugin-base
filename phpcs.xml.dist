@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="{{NAME}}">
+    <description>PHP coding rules for the {{NAME}} plugin.</description>
+
+    <file>.</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg value="ps"/>
+
+    <exclude-pattern>/build/*</exclude-pattern>
+    <exclude-pattern>/dist/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <!-- The isolated test bootstrap intentionally provides WordPress global stubs. -->
+    <exclude-pattern>/tests/bootstrap.php</exclude-pattern>
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/.wp-env-home/*</exclude-pattern>
+
+    <rule ref="WordPress"/>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="{{TEXT_DOMAIN}}"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="{{PREFIX}}"/>
+                <element value="{{NAMESPACE}}"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>

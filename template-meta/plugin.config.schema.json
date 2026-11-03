@@ -1,0 +1,75 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Plugin configuration for a wp-plugin-base derived project",
+	"type": "object",
+	"required": [
+		"name",
+		"slug",
+		"textDomain",
+		"namespace",
+		"prefix",
+		"author",
+		"repo",
+		"license"
+	],
+	"properties": {
+		"name": {
+			"type": "string",
+			"description": "Human-readable plugin name."
+		},
+		"slug": {
+			"type": "string",
+			"pattern": "^[a-z0-9-]+$",
+			"description": "Plugin slug, main file name and text domain base."
+		},
+		"textDomain": { "type": "string" },
+		"namespace": {
+			"type": "string",
+			"pattern": "^[A-Z][A-Z0-9]+$",
+			"description": "PHP namespace / constant prefix, e.g. YTPP."
+		},
+		"prefix": {
+			"type": "string",
+			"pattern": "^[a-z][a-z0-9_]+$",
+			"description": "Lowercase global prefix, e.g. ytpp."
+		},
+		"author": { "type": "string" },
+		"repo": {
+			"type": "string",
+			"pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$",
+			"description": "GitHub owner/repo, e.g. quasipapa/youtube-player."
+		},
+		"license": { "type": "string", "default": "GPL-2.0-or-later" },
+		"mainFile": {
+			"type": "string",
+			"description": "Plugin bootstrap file."
+		},
+		"readme": { "type": "string", "default": "readme.txt" },
+		"blockName": { "type": "string", "description": "Example block name." },
+		"i18nUseMap": {
+			"type": "object",
+			"additionalProperties": { "type": "string" },
+			"description": "Source-to-build mapping for wp i18n make-json."
+		},
+		"packageFiles": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Files copied into the release ZIP."
+		},
+		"packageDirs": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Directories copied into the release ZIP."
+		},
+		"requiredPackageEntries": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Additional ZIP entries that must exist (relative to the plugin root)."
+		},
+		"docsRootFiles": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Root Markdown files validated by check-docs."
+		}
+	}
+}

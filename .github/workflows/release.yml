@@ -1,0 +1,62 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - 'v*'
+    workflow_dispatch:
+        inputs:
+            release_tag:
+                description: Version tag to validate without publishing (for example v0.1.0)
+                required: true
+                type: string
+
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+
+env:
+    NODE_VERSION: '22.22.2'
+
+jobs:
+    release:
+        name: Build and publish release
+        runs-on: ubuntu-24.04
+        permissions:
+            contents: write
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Load plugin configuration
+              run: node scripts/lib/print-github-env.mjs
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - name: Install JavaScript dependencies
+              run: npm ci
+            - name: Run complete quality gate and WordPress smoke tests
+              run: npm run test:local
+            - name: Verify tag and project versions agree
+              env:
+                  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+              run: npm run check:versions
+            - name: Build release ZIP and checksum
+              run: npm run plugin:zip
+            - name: Verify release package contents and checksum
+              run: npm run check:package
+            - name: Publish GitHub release
+              if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  gh release create "${{ github.ref_name }}" \
+                      dist/${{ env.PACKAGE_ZIP }} \
+                      dist/${{ env.PACKAGE_ZIP }}.sha256 \
+                      --repo "${{ github.repository }}" \
+                      --title "${{ github.ref_name }}" \
+                      --generate-notes

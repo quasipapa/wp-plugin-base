@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "{{SLUG}}/example",
+	"version": "0.1.0",
+	"title": "{{NAME}} Example",
+	"category": "widgets",
+	"description": "Example block generated from wp-plugin-base.",
+	"textdomain": "{{TEXT_DOMAIN}}",
+	"attributes": {
+		"message": {
+			"type": "string",
+			"default": "Hello from {{NAME}}"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

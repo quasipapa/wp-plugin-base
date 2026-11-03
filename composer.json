@@ -1,0 +1,37 @@
+{
+	"name": "quasipapa/example-plugin",
+	"description": "Example Plugin — built on wp-plugin-base.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.0"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.2.1",
+		"php-parallel-lint/php-parallel-lint": "^1.4.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1.8",
+		"phpunit/phpunit": "^9.6.29",
+		"wp-coding-standards/wpcs": "^3.4.1"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "8.0.0"
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": [
+			"@lint:syntax",
+			"@lint:standards",
+			"@lint:compatibility"
+		],
+		"lint:syntax": "parallel-lint --exclude vendor --exclude node_modules --exclude build --exclude dist --exclude .wp-env-home .",
+		"lint:standards": "phpcs --standard=phpcs.xml.dist",
+		"lint:compatibility": "phpcs --standard=PHPCompatibilityWP --runtime-set testVersion 8.0- --extensions=php --ignore=vendor,node_modules,build,dist,.wp-env-home .",
+		"format": "phpcbf --standard=phpcs.xml.dist",
+		"test": "phpunit --configuration phpunit.xml.dist"
+	}
+}

@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Quality requirements
 
 Non-functional requirements with stable IDs `NFR-NNN`.

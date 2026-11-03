@@ -8,7 +8,7 @@
 	"author": "quasipapa",
 	"repo": "quasipapa/example-plugin",
 	"license": "GPL-2.0-or-later",
-	"mainFile": "example-plugin.php",
+	"mainFile": "plugin-main.php",
 	"readme": "readme.txt",
 	"blockName": "example-plugin/example",
 	"i18nUseMap": {
@@ -22,7 +22,11 @@
 		"LICENSE",
 		"THIRD_PARTY_NOTICES.md"
 	],
-	"packageDirs": [ "build", "includes", "languages" ],
+	"packageDirs": [
+		"build",
+		"includes",
+		"languages"
+	],
 	"requiredPackageEntries": [
 		"build/block.json",
 		"build/render.php",

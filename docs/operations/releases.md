@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Releases
 
 A `v*` tag triggers `.github/workflows/release.yml`: full local gate, version

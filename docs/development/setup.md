@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Development setup
 
 Requires Docker, Node.js and npm per [versions](versions.md).

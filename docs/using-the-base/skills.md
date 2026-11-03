@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Use the wp-plugin-base agent skill
 
 <a id="skills-001"></a>

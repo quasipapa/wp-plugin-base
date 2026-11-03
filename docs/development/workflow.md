@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Development workflow
 
 - Feature branch per task: `feature/<short-description>`; PR against `main`;

@@ -15,6 +15,7 @@ import {
 	readdirSync,
 	readFileSync,
 	renameSync,
+	rmSync,
 	statSync,
 	writeFileSync,
 } from 'node:fs';
@@ -185,6 +186,16 @@ const bootstrap = join( root, 'plugin-main.php' );
 if ( existsSync( bootstrap ) ) {
 	renameSync( bootstrap, join( root, `${ slug }.php` ) );
 }
+
+// Project-scope root files replace the base-scope ones; base-only
+// documentation (template-docs/) is removed from the derived project.
+for ( const file of [ 'README.md', 'AGENTS.md' ] ) {
+	const skeleton = join( root, 'template-meta/project', file );
+	if ( existsSync( skeleton ) ) {
+		renameSync( skeleton, join( root, file ) );
+	}
+}
+rmSync( join( root, 'template-docs' ), { recursive: true, force: true } );
 
 // Re-format after placeholder replacement when dependencies are installed.
 const prettier = join( root, 'node_modules/.bin/prettier' );

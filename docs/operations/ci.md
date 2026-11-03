@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # CI
 
 `.github/workflows/ci.yml` runs on every PR and push to `main`. Changes are

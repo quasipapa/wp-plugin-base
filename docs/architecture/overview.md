@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Architecture overview
 
 Layout: bootstrap `{{SLUG}}.php`, block sources in `src/` (built by

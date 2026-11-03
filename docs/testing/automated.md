@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Automated verification
 
 - `tests/unit/`: PHPUnit.

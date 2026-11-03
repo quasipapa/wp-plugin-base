@@ -1,8 +1,27 @@
+---
+scope: project
+---
+
 # Documentation policy
 
 This policy defines how project knowledge is recorded and kept current. It
 applies to product code, documentation, development tooling, tests and
 operations.
+
+## Documentation scopes
+
+Projects generated from wp-plugin-base distinguish two scopes:
+
+- **project scope** — this `docs/` tree and the project's root files. It is
+  the authoritative documentation of _this_ plugin and carries
+  `scope: project` frontmatter.
+- **base scope** — documentation of wp-plugin-base itself (architecture,
+  ADRs, changelog). It lives in the base repository under `template-docs/` and
+  is referenced by link, never copied here; it carries `scope: base`.
+
+`npm run check:docs` enforces the scope markers. `docs/using-the-base/` is the
+exception: those guides are project-scope and base-managed, so base upgrades
+refresh them automatically.
 
 ## Audience and objective
 
@@ -153,26 +172,26 @@ procedure and observable expected results. State any material limitation of the
 case. Coverage status describes the available verification methods, not whether
 a particular release passed them.
 
-| Change | Documents to review or update |
-| --- | --- |
-| Observable product or integration behavior | Requirements, affected editorial guidance or integration contracts, architecture, coverage and traceability |
-| Requirement added, changed, deprecated or retired | Requirement source, coverage and traceability |
-| Architectural boundary or consequential decision | Architecture overview or runtime, ADRs, affected requirements and traceability |
-| Automated suite or verification responsibility | Automated testing inventory, coverage and development workflow when commands change |
-| Manual acceptance scope or expected result | Manual acceptance cases and coverage |
-| Known verification gap opened or closed | Coverage, related idea or issue, and affected requirement where its claim changes |
-| Setup, tool, platform or test-environment version | Executable configuration, version matrix, setup and affected operations documentation |
-| CI, packaging or release process | Development architecture, operations documentation and affected ADRs |
-| Release candidate accepted or published | Release audit, roadmap delivery link, traceability and release notes |
-| Dated investigation or risk decision | Audit record and the current policy or procedure that links to it |
-| Idea accepted, rejected or scheduled | Idea register, roadmap, related requirements and traceability |
-| Issue, milestone or delivery relationship changes | Traceability and the owning idea, roadmap or requirement entry |
-| Support or security process changes | Maintenance, SECURITY.md and affected user or release guidance |
-| Separate MCP investigation changes | MCP documentation and its local index |
-| Document added, moved, renamed or retired | Documentation index, affected links and document roles in this policy |
-| Document audience or entry point changes | Role-based reading paths and question-based navigation in index.md |
-| Historical fact corrected | Dated record or project history with the correction's source; preserve the original scope and date |
-| Documentation ownership or validation rules change | This policy, documentation checks and affected contribution guidance |
+| Change                                             | Documents to review or update                                                                               |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Observable product or integration behavior         | Requirements, affected editorial guidance or integration contracts, architecture, coverage and traceability |
+| Requirement added, changed, deprecated or retired  | Requirement source, coverage and traceability                                                               |
+| Architectural boundary or consequential decision   | Architecture overview or runtime, ADRs, affected requirements and traceability                              |
+| Automated suite or verification responsibility     | Automated testing inventory, coverage and development workflow when commands change                         |
+| Manual acceptance scope or expected result         | Manual acceptance cases and coverage                                                                        |
+| Known verification gap opened or closed            | Coverage, related idea or issue, and affected requirement where its claim changes                           |
+| Setup, tool, platform or test-environment version  | Executable configuration, version matrix, setup and affected operations documentation                       |
+| CI, packaging or release process                   | Development architecture, operations documentation and affected ADRs                                        |
+| Release candidate accepted or published            | Release audit, roadmap delivery link, traceability and release notes                                        |
+| Dated investigation or risk decision               | Audit record and the current policy or procedure that links to it                                           |
+| Idea accepted, rejected or scheduled               | Idea register, roadmap, related requirements and traceability                                               |
+| Issue, milestone or delivery relationship changes  | Traceability and the owning idea, roadmap or requirement entry                                              |
+| Support or security process changes                | Maintenance, SECURITY.md and affected user or release guidance                                              |
+| Separate MCP investigation changes                 | MCP documentation and its local index                                                                       |
+| Document added, moved, renamed or retired          | Documentation index, affected links and document roles in this policy                                       |
+| Document audience or entry point changes           | Role-based reading paths and question-based navigation in index.md                                          |
+| Historical fact corrected                          | Dated record or project history with the correction's source; preserve the original scope and date          |
+| Documentation ownership or validation rules change | This policy, documentation checks and affected contribution guidance                                        |
 
 Actual test executions, failures, waivers and accepted residual risks belong in
 a dated audit record. Reusable testing documents contain procedures and expected

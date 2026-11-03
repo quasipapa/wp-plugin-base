@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Build a plugin on wp-plugin-base
 
 <a id="build-001"></a>

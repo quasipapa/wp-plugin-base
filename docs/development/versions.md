@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Version matrix
 
 Authoritative supported-platform values. When a version changes, update the

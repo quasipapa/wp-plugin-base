@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Product requirements
 
 Functional requirements with stable IDs `FR-NNN`, e.g.:

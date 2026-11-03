@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Architecture decision records
 
 One ADR per file, numbered (`0001-….md`), format per

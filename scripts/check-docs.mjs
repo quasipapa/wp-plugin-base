@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, extname, join, relative, resolve } from 'node:path';
+import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inspectMarkdown } from './markdown-contract.mjs';
 import { loadConfig } from './lib/config.mjs';
@@ -12,6 +12,10 @@ const readIfExists = ( path ) =>
 		? readFileSync( join( root, path ), 'utf8' )
 		: null;
 const roots = [ 'docs', '.github' ].map( ( path ) => join( root, path ) );
+if ( existsSync( join( root, 'template-docs' ) ) )
+	roots.push( join( root, 'template-docs' ) );
+if ( existsSync( join( root, 'template-meta/project' ) ) )
+	roots.push( join( root, 'template-meta/project' ) );
 const files = (
 	config.docsRootFiles ?? [
 		'AGENTS.md',
@@ -40,7 +44,35 @@ for ( const path of roots ) {
 	collectMarkdown( path );
 }
 
+// Documentation scope markers: base-scope files describe wp-plugin-base itself
+// (template-docs/, root README/AGENTS in the base repo), project-scope files
+// are the skeleton derived plugins inherit.
+const isBaseRepo = existsSync( join( root, 'template-docs' ) );
+const expectedScope = ( file ) => {
+	const rel = relative( root, file );
+	if ( rel.startsWith( `template-docs${ sep }` ) ) return 'base';
+	if (
+		rel.startsWith( `docs${ sep }` ) ||
+		rel.startsWith( `template-meta${ sep }project${ sep }` )
+	)
+		return 'project';
+	if ( rel === 'README.md' || rel === 'AGENTS.md' )
+		return isBaseRepo ? 'base' : 'project';
+	return null;
+};
+
 const errors = [];
+for ( const file of files ) {
+	const scope = expectedScope( file );
+	if ( ! scope ) continue;
+	const head = readFileSync( file, 'utf8' ).slice( 0, 200 );
+	const marker = head.match( /^---\n[\s\S]*?scope:\s*(\w+)/ )?.[ 1 ];
+	if ( marker !== scope )
+		errors.push(
+			`${ relative( root, file ) }: expected frontmatter scope: ${ scope }, found ${ marker ?? 'none' }`
+		);
+}
+
 const markdownErrors = lint( {
 	files,
 	config: JSON.parse(
@@ -58,6 +90,14 @@ const anchorsByFile = new Map();
 const stableIds = new Map();
 
 const linksByFile = new Map();
+
+// Skeleton files under template-meta/project/ land at the project root after
+// init, so their relative links resolve from the root, not their template path.
+const linkBaseDir = ( file ) => {
+	const rel = relative( root, file );
+	if ( rel.startsWith( `template-meta${ sep }project${ sep }` ) ) return root;
+	return dirname( file );
+};
 
 for ( const file of files ) {
 	const source = readFileSync( file, 'utf8' );
@@ -90,7 +130,7 @@ for ( const file of files ) {
 		}
 		const [ rawPath, rawFragment = '' ] = rawTarget.split( '#', 2 );
 		const target = rawPath
-			? resolve( dirname( file ), decodeURI( rawPath ) )
+			? resolve( linkBaseDir( file ), decodeURI( rawPath ) )
 			: file;
 		if ( ! existsSync( target ) ) {
 			errors.push(

@@ -1,8 +1,17 @@
+---
+scope: project
+---
+
 # Documentation index — {{NAME}}
 
 Generated from [wp-plugin-base](https://github.com/quasipapa/wp-plugin-base).
 The [documentation policy](documentation-policy.md) is binding for every
 change, including agent-made ones.
+
+This `docs/` tree is **project-scope** documentation. Documentation about the
+base itself (architecture, ADRs, changelog) is **base-scope** and lives in the
+[wp-plugin-base repository](https://github.com/quasipapa/wp-plugin-base/tree/main/template-docs),
+not in this project.
 
 ## Using the base
 

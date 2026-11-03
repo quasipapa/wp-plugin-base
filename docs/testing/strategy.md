@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Test strategy
 
 Cheapest reliable layer per risk:

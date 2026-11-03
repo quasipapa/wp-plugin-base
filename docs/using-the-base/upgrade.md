@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Absorb wp-plugin-base updates
 
 <a id="upgrade-001"></a>

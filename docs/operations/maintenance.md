@@ -1,3 +1,7 @@
+---
+scope: project
+---
+
 # Maintenance and support
 
 Security reports follow [../../SECURITY.md](../../SECURITY.md) — never public

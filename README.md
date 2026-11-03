@@ -1,3 +1,7 @@
+---
+scope: base
+---
+
 # wp-plugin-base
 
 A reusable foundation for WordPress plugins: a GitHub **template repository**
@@ -32,6 +36,12 @@ template intentionally does not duplicate them.
 
 ## Layout
 
+- `template-docs/` — **base-scope documentation** (this template's own
+  architecture, ADRs, changelog). Not copied into derived plugins.
+- `template-meta/project/` — project-scope skeletons for the root `README.md`
+  and `AGENTS.md` of derived plugins.
+- `docs/` — **project-scope documentation skeleton** inherited by derived
+  plugins (policy first, including the `using-the-base/` guides).
 - `template-meta/` — schemas, the managed-file list and the base lock of the
   generated project.
 - `scripts/` — build, CI, documentation, i18n and delivery checks plus
@@ -39,7 +49,9 @@ template intentionally does not duplicate them.
 - `.github/workflows/` — CI gate and release workflow.
 - `src/`, `plugin-main.php`, `readme.txt` — a minimal example block that is
   replaced by your own plugin code.
-- `docs/` — documentation skeleton (policy first).
+
+Every Markdown file carries a `scope: base` or `scope: project` frontmatter
+marker; `npm run check:docs` enforces it.
 
 ## License
 

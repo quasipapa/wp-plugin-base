@@ -58,6 +58,8 @@ jobs:
                   cache: npm
             - name: Install locked JavaScript dependencies
               run: npm ci
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Validate Markdown, links, anchors and traceability
               run: npm run check:docs
             - name: Test CI classification, gate and delivery contracts
@@ -78,6 +80,8 @@ jobs:
                   cache: npm
             - name: Install locked JavaScript dependencies
               run: npm ci
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Verify versions and metadata
               run: npm run check:versions
             - name: Load plugin configuration
@@ -102,6 +106,8 @@ jobs:
                   cache: npm
             - name: Install JavaScript dependencies
               run: npm ci
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Install PHP dependencies
               run: npm run composer:install
             - name: Start WordPress test environment
@@ -123,6 +129,12 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            - name: Set up Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Set up PHP
               uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
               with:
@@ -149,6 +161,8 @@ jobs:
                   cache: npm
             - name: Install JavaScript dependencies
               run: npm ci
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Run JavaScript, CSS and unit checks
               run: npm run lint:js && npm run lint:css && npm run test:js
 
@@ -167,6 +181,8 @@ jobs:
                   cache: npm
             - name: Install JavaScript dependencies
               run: npm ci
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Run WordPress and browser quality gate
               run: npm run test:local
 
@@ -188,6 +204,8 @@ jobs:
                   cache: npm
             - name: Install JavaScript dependencies
               run: npm ci
+            - name: Initialize the template with the example values
+              run: npm run init:example
             - name: Build production package
               run: npm run plugin:zip
             - name: Verify package contents and checksum

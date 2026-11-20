@@ -159,8 +159,12 @@ const languagesDir = join( root, 'languages' );
 if ( existsSync( languagesDir ) ) {
 	for ( const entry of readdirSync( languagesDir ) ) {
 		const path = join( languagesDir, entry );
-		const content = readFileSync( path, 'utf8' );
-		writeFileSync( path, content.replaceAll( 'example-plugin', slug ) );
+		// Binary catalogs (.mo) must stay byte-identical; only rename them.
+		const ext = entry.slice( entry.lastIndexOf( '.' ) );
+		if ( ! binaryExtensions.has( ext ) ) {
+			const content = readFileSync( path, 'utf8' );
+			writeFileSync( path, content.replaceAll( 'example-plugin', slug ) );
+		}
 		if ( entry.includes( 'example-plugin' ) ) {
 			renameSync(
 				path,

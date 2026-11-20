@@ -13,10 +13,17 @@ copied to the project root by `scripts/init-template.mjs`.
 
 - **base scope** (`scope: base`): `template-docs/`, this file, root
   `README.md`, `CHANGELOG.md` — about the template. Not copied into derived
-  plugins.
+  plugins. Example: the template's own CI process lives in
+  `template-docs/ci.md`.
 - **project scope** (`scope: project`): `docs/`, `template-meta/project/` —
   the skeleton derived plugins inherit. `docs/using-the-base/` is managed and
-  refreshed by base upgrades.
+  refreshed by base upgrades. Example: CI of derived projects is
+  `docs/operations/ci.md`.
+
+Rule of thumb: docs about wp-plugin-base itself (its CI, release, tooling) go
+to `template-docs/`; docs inherited by derived plugins go to `docs/`. Project
+files must not link to `template-docs/` (missing after init) — use inline code
+or a GitHub URL.
 
 `npm run check:docs` enforces the scope markers.
 

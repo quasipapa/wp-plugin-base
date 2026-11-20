@@ -23,4 +23,12 @@ always-current copy lives in this repository.
 | `base`    | `template-docs/`, root `README.md`, root `AGENTS.md`, `CHANGELOG.md`  | maintainers of wp-plugin-base | no (init removes/replaces them) |
 | `project` | `docs/`, `template-meta/project/`, configs, `src/`, `plugin-main.php` | authors of derived plugins    | yes                             |
 
-`npm run check:docs` enforces the `scope` frontmatter on these files.
+Rule of thumb when adding docs: **does it describe wp-plugin-base itself or the
+plugins generated from it?** The template's own processes (CI, release,
+init/upgrade tooling) belong here — e.g. [CI of the template](ci.md), whose
+counterpart for derived projects is `docs/operations/ci.md`. Anything a
+derived project inherits belongs in `docs/`.
+
+`npm run check:docs` enforces the `scope` frontmatter on these files. Never
+link from project-scope files to `template-docs/` — derived projects do not
+have it; reference it in inline code or via the GitHub URL instead.

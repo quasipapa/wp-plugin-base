@@ -24,6 +24,13 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve( dirname( fileURLToPath( import.meta.url ) ), '..' );
 
+// Idempotency guard: derived projects have no template-docs directory, so a
+// repeated run (e.g. from CI or a local gate) must not touch anything.
+if ( ! existsSync( join( root, 'template-docs' ) ) ) {
+	console.log( 'Already initialized — nothing to do.' );
+	process.exit( 0 );
+}
+
 function arg( name, fallback ) {
 	const index = process.argv.indexOf( `--${ name }` );
 	if ( index !== -1 ) return process.argv[ index + 1 ];
@@ -152,8 +159,12 @@ const languagesDir = join( root, 'languages' );
 if ( existsSync( languagesDir ) ) {
 	for ( const entry of readdirSync( languagesDir ) ) {
 		const path = join( languagesDir, entry );
-		const content = readFileSync( path, 'utf8' );
-		writeFileSync( path, content.replaceAll( 'example-plugin', slug ) );
+		// Binary catalogs (.mo) must stay byte-identical; only rename them.
+		const ext = entry.slice( entry.lastIndexOf( '.' ) );
+		if ( ! binaryExtensions.has( ext ) ) {
+			const content = readFileSync( path, 'utf8' );
+			writeFileSync( path, content.replaceAll( 'example-plugin', slug ) );
+		}
 		if ( entry.includes( 'example-plugin' ) ) {
 			renameSync(
 				path,

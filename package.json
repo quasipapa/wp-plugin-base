@@ -22,6 +22,7 @@
 		"format:check": "prettier --config node_modules/@wordpress/prettier-config/lib/index.js --check '**/*.{cjs,js,json,mjs,yml,yaml}'",
 		"composer:install": "sh scripts/composer.sh install",
 		"composer:update": "sh scripts/composer.sh update",
+		"init:example": "node scripts/init-template.mjs --name \"Example Plugin\" --slug example-plugin --author quasipapa --repo quasipapa/example-plugin",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",
 		"env:reset": "wp-env reset",
